@@ -48,7 +48,7 @@ export class OrionRequest {
     )}&eventDate=${dateEventFormatted}`;
 
     try {
-      const response = await axios.get(url);
+      const response = await axios.post(url);
       return Promise.resolve(response.data);
     } catch (error) {
       return Promise.reject(error);

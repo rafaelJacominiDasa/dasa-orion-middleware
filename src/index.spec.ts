@@ -17,9 +17,9 @@ describe("OrionRequest", () => {
 
   it("should return the correct data when the GET request is successful", async () => {
     const mockedData = { data: { foo: "bar" } };
-    (axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValueOnce(
-      mockedData
-    );
+    (
+      axios.post as jest.MockedFunction<typeof axios.post>
+    ).mockResolvedValueOnce(mockedData);
     const dateEventFormatted = format(
       new Date(dateEvent),
       "yyyy-MM-dd HH:mm:ss.SSS"
@@ -35,7 +35,7 @@ describe("OrionRequest", () => {
     });
 
     expect(response).toEqual(mockedData.data);
-    expect(axios.get).toHaveBeenCalledWith(
+    expect(axios.post).toHaveBeenCalledWith(
       `${process.env.BASE_URL}/${UUID}/?dataType=${encodeURIComponent(
         dataType
       )}&dataLake=${dataLake}&level=${encodeURIComponent(
@@ -46,9 +46,9 @@ describe("OrionRequest", () => {
 
   it("should throw an error when the GET request is unsuccessful", async () => {
     const error = new Error("Request failed with status code 404");
-    (axios.get as jest.MockedFunction<typeof axios.get>).mockRejectedValueOnce(
-      error
-    );
+    (
+      axios.post as jest.MockedFunction<typeof axios.post>
+    ).mockRejectedValueOnce(error);
 
     const orionRequest = new OrionRequest({});
     try {
