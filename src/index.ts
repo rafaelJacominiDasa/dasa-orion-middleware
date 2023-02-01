@@ -17,18 +17,16 @@ interface Options {
   retryDelay?: (retryCount: number) => number;
 }
 
-const defaultOptions: Options = {
-  retry: 3,
-  retryDelay: (retryCount: number) => {
-    return retryCount * 1000;
-  },
-};
-
 export class OrionRequest {
-  private options: Options;
+  constructor(options: Options) {
+    const defaultOptions: Options = {
+      retry: options.retry || 3,
+      retryDelay: (retryCount: number) => {
+        return retryCount * 3000;
+      },
+    };
 
-  constructor(options?: Options) {
-    this.options = { ...defaultOptions, ...options };
+    axiosRetry(axios, defaultOptions);
   }
 
   public async orionRequest(params: QueryParams) {
@@ -49,15 +47,11 @@ export class OrionRequest {
       level
     )}&eventDate=${dateEventFormatted}`;
 
-    const axiosInstance = axios.create();
-    axiosRetry(axiosInstance, this.options);
-
     try {
-      const response = await axiosInstance.get(url);
-      return response.data;
+      const response = await axios.get(url);
+      return Promise.resolve(response.data);
     } catch (error) {
-      console.error(error);
-      throw error;
+      return Promise.reject(error);
     }
   }
 }
