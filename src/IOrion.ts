@@ -4,5 +4,5 @@ export interface IOrion {
   dataType: string;
   dataLake?: boolean;
   level?: "info" | "warn" | "error" | "critical" | "debug";
-  dateEvent: number;
+  dateEvent?: number;
 }

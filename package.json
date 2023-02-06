@@ -1,30 +1,32 @@
 {
   "name": "dasa-orion-middleware",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "A middleware to communicate with Dasa Orion Application",
-  "main": "index.jt",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "commonjs",
   "repository": "https://github.com/rafaelJacominiDasa/dasa-orion-middleware",
   "author": "Rafael Jacomini do Carmo",
   "license": "MIT",
   "private": false,
   "scripts": {
     "start:dev": "npx nodemon",
-    "start": "yarn build && node build/index.js",
-    "test": "jest",
-    "build": "rimraf ./build && tsc"
+    "start": "yarn build && nodemon",
+    "test": "jest --watchAll",
+    "build": "rimraf ./dist && tsc"
   },
   "dependencies": {
     "@azure/event-hubs": "^5.8.0",
     "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.18",
+    "@types/validator": "^13.7.12",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
     "date-fns": "^2.29.3",
     "ts-jest": "^29.0.5",
     "typescript": "*",
     "validator": "^13.9.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18",
-    "@types/validator": "^13.7.12",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard-with-typescript": "^33.0.0",
