@@ -1,67 +1,44 @@
-import axios from "axios";
-import { OrionRequest } from "./";
-import { format } from "date-fns";
+// Unit Test
+import { Orion } from "./";
+import { EventHubProducerClient } from "@azure/event-hubs";
+import { IOrion } from "./IOrion";
 
-jest.mock("axios");
+describe("Orion", () => {
+  let orion: Orion;
 
-describe("OrionRequest", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  beforeEach(() => {
+    const connectionString =
+      "Endpoint=sb://example.servicebus.windows.net/;SharedAccessKeyName=example;SharedAccessKey=example";
+    orion = new Orion(connectionString);
   });
 
-  const UUID = "123";
-  const dataType = "test";
-  const dataLake = false;
-  const level = "info";
-  const dateEvent = 1612484800000;
+  it("should create an instance of EventHubProducerClient", () => {
+    expect(orion["producer"]).toBeInstanceOf(EventHubProducerClient);
+  });
 
-  it("should return the correct data when the GET request is successful", async () => {
-    const mockedData = { data: { foo: "bar" } };
-    (
-      axios.post as jest.MockedFunction<typeof axios.post>
-    ).mockResolvedValueOnce(mockedData);
-    const dateEventFormatted = format(
-      new Date(dateEvent),
-      "yyyy-MM-dd HH:mm:ss.SSS"
-    );
+  it("should throw an error if UUID is not between 10 and 60 characters long", async () => {
+    const data: IOrion = {
+      UUID: "123456789",
+      date: 0,
+      dataType: "",
+      dateEvent: 0,
+    };
 
-    const orionRequest = new OrionRequest({});
-    const response = await orionRequest.orionRequest({
-      UUID,
-      dataType,
-      dataLake,
-      level,
-      dateEvent,
-    });
-
-    expect(response).toEqual(mockedData.data);
-    expect(axios.post).toHaveBeenCalledWith(
-      `${process.env.BASE_URL}/${UUID}/?dataType=${encodeURIComponent(
-        dataType
-      )}&dataLake=${dataLake}&level=${encodeURIComponent(
-        level
-      )}&eventDate=${dateEventFormatted}`
+    await expect(orion.sendData(data)).rejects.toThrowError(
+      "UUID must be between 10 and 60 characters long"
     );
   });
 
-  it("should throw an error when the GET request is unsuccessful", async () => {
-    const error = new Error("Request failed with status code 404");
-    (
-      axios.post as jest.MockedFunction<typeof axios.post>
-    ).mockRejectedValueOnce(error);
+  it("should throw an error if dataType is not between 5 and 60 characters long", async () => {
+    const data: IOrion = {
+      UUID: "1234567890123456",
+      dataType: "123",
+      date: 0,
+      dateEvent: 0,
+    };
 
-    const orionRequest = new OrionRequest({});
-    try {
-      await orionRequest.orionRequest({
-        UUID,
-        dataType,
-        dataLake,
-        level,
-        dateEvent,
-      });
-      fail("The GET request should have failed");
-    } catch (e) {
-      expect(e).toEqual(error);
-    }
+    await expect(orion.sendData(data)).rejects.toThrowError(
+      "dataType must be between 5 and 60 characters long"
+    );
   });
 });
